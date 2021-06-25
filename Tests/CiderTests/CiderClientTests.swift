@@ -25,10 +25,12 @@ struct MockUrlFetcher: UrlFetcher {
 // MARK: - MockUrlBuilder
 
 struct MockUrlBuilder: UrlBuilder {
+    
     static let searchRequest = URLRequest(url: URL(string: "http://search.com")!)
     static let searchHintsRequest = URLRequest(url: URL(string: "http://searchHint.com")!)
     static let fetchRequest = URLRequest(url: URL(string: "http://fetch.com")!)
     static let relationshipRequest = URLRequest(url: URL(string: "http://relationship.com")!)
+    static let fetchUserLibraryRequest = URLRequest(url: URL(string: "http://fetchUserLibrary.com")!)
 
     func searchRequest(term: String, limit: Int?, offset: Int?, types: [MediaType]?) -> URLRequest {
         return MockUrlBuilder.searchRequest
@@ -44,6 +46,10 @@ struct MockUrlBuilder: UrlBuilder {
 
     func relationshipRequest(path: String, limit: Int?, offset: Int?) -> URLRequest {
         return MockUrlBuilder.relationshipRequest
+    }
+    
+    func fetchUserLibraryRequest(limit: Int?, offset: String?) -> URLRequest {
+        return MockUrlBuilder.fetchUserLibraryRequest
     }
 }
 

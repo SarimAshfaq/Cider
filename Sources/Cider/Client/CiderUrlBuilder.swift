@@ -13,6 +13,7 @@ protocol UrlBuilder {
     func searchHintsRequest(term: String, limit: Int?, types: [MediaType]?) -> URLRequest
     func fetchRequest(mediaType: MediaType, id: String, include: [Include]?) -> URLRequest
     func relationshipRequest(path: String, limit: Int?, offset: Int?) -> URLRequest
+    func fetchUserLibraryRequest(limit: Int?, offset: String?) -> URLRequest
 }
 
 public enum CiderUrlBuilderError: Error {
@@ -40,6 +41,9 @@ private struct AppleMusicApi {
     // Fetch
     static let fetchPath = "v1/catalog/{storefront}/{mediaType}/{id}"
     static let fetchInclude = "include"
+    
+    // User Library
+    static let userLibrary = "v1/me/library/songs"
 }
 
 // MARK: - UrlBuilder
@@ -125,6 +129,22 @@ struct CiderUrlBuilder: UrlBuilder {
 
         return components.url(relativeTo: baseApiUrl)!.absoluteURL
     }
+    
+    private func fetchUserLibraryUrl(limit: Int?, offset: String?) -> URL {
+
+        // Construct url path
+
+        var components = URLComponents()
+
+        components.path = AppleMusicApi.userLibrary
+
+        // Construct Query
+        components.apply(limit: limit)
+        components.apply(offset: offset)
+
+        // Construct final url
+        return components.url(relativeTo: baseApiUrl)!
+    }
 
     // MARK: Construct requests
 
@@ -145,6 +165,11 @@ struct CiderUrlBuilder: UrlBuilder {
 
     func relationshipRequest(path: String, limit: Int?, offset: Int?) -> URLRequest {
         let url = relationshipUrl(path: path, limit: limit, offset: offset)
+        return constructRequest(url: url)
+    }
+    
+    func fetchUserLibraryRequest(limit: Int?, offset: String?) -> URLRequest {
+        let url = fetchUserLibraryUrl(limit: limit, offset: offset)
         return constructRequest(url: url)
     }
 
@@ -226,6 +251,13 @@ private extension URLComponents {
     }
 
     mutating func apply(offset: Int?) {
+        guard let offset = offset else { return }
+
+        createQueryItemsIfNeeded()
+        queryItems?.append(URLQueryItem(name: AppleMusicApi.offsetParameter, value: "\(offset)"))
+    }
+    
+    mutating func apply(offset: String?) {
         guard let offset = offset else { return }
 
         createQueryItemsIfNeeded()

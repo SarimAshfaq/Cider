@@ -74,6 +74,19 @@ public struct CiderClient {
         let request = urlBuilder.searchHintsRequest(term: term, limit: limit, types: types)
         fetch(request) { (results: ResponseRoot<SearchHints>?, error) in completion?(results?.results, error) }
     }
+    
+    /**
+     Search User Library
+
+     - parameters:
+       - limit: The amount of results to return.
+       - offset: The offset to use for paginating results.
+       - completion: The completion handler to call with the results of the search.
+     */
+    public func fetchUserLibrary(limit: Int? = 10, offset: String? = nil, completion: ((SearchResults?, Error?) -> Void)?) {
+        let request = urlBuilder.fetchUserLibraryRequest(limit: limit, offset: offset)
+        fetch(request) { (results: ResponseRoot<SearchResults>?, error) in completion?(results?.results, error) }
+    }
 
     // MARK: Lookup
 
